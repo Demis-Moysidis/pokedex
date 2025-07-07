@@ -4,8 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokedex</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./script.js"></script>
 </head>
-<body>
-    
+<body onload="init()">
+    <header class="container">
+        <div class="header card">
+            <img src="./assets/icons/pokeball_colored.png" alt="">
+            <h1>Pokédex</h1>
+        </div>
+    </header>
+    <main class="container">
+            <div id="main-pokecards"></div>
+            <div id="main-selected_pokecard" class="card"></div>
+    </main>
+    <footer class="container">
+        <div class="footer card">
+            <img src="./assets/icons/pokeball_colored.png" alt="">
+            <p>Pokédex</p>
+        </div>
+    </footer>
 </body>
 </html>
