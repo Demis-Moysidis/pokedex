@@ -1,5 +1,5 @@
 function init(){
-    renderPokecards(30);
+    renderPokecards(5);
 }
 
 async function renderPokecards(pokeAmount){
