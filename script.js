@@ -1,36 +1,54 @@
+let pokeCurrentAmount = 50;
+let pokeAmountForShowMore = 50;
+
+let maxNumberOfPokemonToShow = 1025;
+let startNumberOfPekon = 1;
+
 function init(){
-    renderPokecards(5);
+    renderLoadingScreen();
+    renderPokecards(startNumberOfPekon, pokeCurrentAmount);
 }
 
-async function renderPokecards(pokeAmount){
+async function renderPokecards(pokeStart, pokeEnd){
     let refPokecards = document.getElementById('main-pokecards');
+    let htmlStructureOfPokemons = "";
 
-    for (let i = 1; i <= pokeAmount; i++) {
+    for (let i = pokeStart; i <= pokeEnd; i++) {
 
-        let pokeData = await fetch('https://pokeapi.co/api/v2/pokemon/' + i);
-        let pokeDataJson = await pokeData.json();
+        if(i <= maxNumberOfPokemonToShow){
+            let pokeData = await fetch('https://pokeapi.co/api/v2/pokemon/' + i);
+            let pokeDataJson = await pokeData.json();
 
-        refPokecards.innerHTML += /*html*/`
-            <div class="card poke_card">
-                <img src="${pokeDataJson.sprites.versions['generation-v']['black-white'].animated.front_default}" alt="">
-                
-                <p>N°${pokeDataJson.id}</p>
-                <h3>${pokeDataJson.name.charAt(0).toUpperCase() + pokeDataJson.name.slice(1)}</h3>
-                <div class="poke_types">${renderPokeTypes(pokeDataJson.types)}</div>
-            </div>
-            `
+            htmlStructureOfPokemons += renderOnePokemonCard(pokeDataJson);
+        }
     }
+    refPokecards.removeChild(refPokecards.lastElementChild);
+    refPokecards.insertAdjacentHTML('beforeend', htmlStructureOfPokemons + (pokeCurrentAmount < maxNumberOfPokemonToShow ? renderShowMorePokemonBtn() : ""));
 }
 
 function renderPokeTypes(typeList){
     let typesHTML = ""
     for (let i = 0; i < typeList.length; i++) {
-        typesHTML += /*html*/`
-            <p class="${typeList[i].type.name} type">
-                <img class="type-icon" src="./assets/icons/types/${typeList[i].type.name}.svg" alt="">
-                ${typeList[i].type.name.toUpperCase()}
-            </p>
-        `
+        typesHTML += renderTypesForOnePokemon(typeList, i);
     }
     return typesHTML
+}
+
+function renderSelectedPokemon(pokemonId){
+    console.log(pokemonId);
+}
+
+function renderLoadingScreen(){
+    let refPokecards = document.getElementById('main-pokecards');
+    refPokecards.insertAdjacentHTML('beforeend', renderLoadingHTML());
+}
+
+function showMorePokemon(){
+    let refPokecards = document.getElementById('main-pokecards');
+    refPokecards.removeChild(refPokecards.lastElementChild);
+
+    renderLoadingScreen();
+
+    renderPokecards(pokeCurrentAmount + 1, pokeCurrentAmount + pokeAmountForShowMore);
+    pokeCurrentAmount += pokeAmountForShowMore;
 }

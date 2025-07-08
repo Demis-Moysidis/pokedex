@@ -57,6 +57,7 @@ h2 {
 h3 {
     color: var(--text-blue);
     font-size: 20px;
+    text-align: center;
 }
 
 .card {
@@ -70,7 +71,7 @@ h3 {
     padding-bottom: 15px;
     padding-top: 50px;
     color: var(--text-gray);
-    width: 230px;
+    width: 250px;
     height: min-content;
     display: flex;
     flex-direction: column;
@@ -101,7 +102,7 @@ h3 {
 }
 
 .container {
-    max-width: 1440px;
+    max-width: 1470px;
     margin: 0 auto;
     width: 100%;
 }
@@ -220,14 +221,53 @@ main {
     flex: 1;
     height: 100%;
     padding-left: 8px;
+    padding-right: 8px;
     padding-top: 50px;
     padding-bottom: 20px;
+    position: relative;
 }
 
 #main-selected_pokecard {
     width: 350px;
     margin-bottom: 8px;
     flex-shrink: 0;
+}
+
+.main-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex-direction: column;
+}
+
+.main-loading p {
+    font-weight: bold;
+}
+
+.main-more_pokemon_btn {
+    padding: 8px 16px;
+    color: var(--text-blue);
+    background-color: transparent;
+    border-radius: 8px;
+    border: 2px solid var(--text-blue);
+    font-weight: bold;
+    transition: all 0.2s ease;   
+}
+
+.main-more_pokemon_container {
+    flex-basis: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.main-more_pokemon_btn:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+}
+
+.main-more_pokemon_btn:active {
+    transform: scale(0.95);
 }
 
 /* Footer */
@@ -243,3 +283,17 @@ main {
     width: 30px;
 }
 
+.rotate_logo {
+    width: 100px;
+    height: 100px;
+    animation: rotateLogo 3s linear infinite;
+}
+
+@keyframes rotateLogo {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
