@@ -12,8 +12,15 @@
 <body onload="init()">
     <header class="container">
         <div class="header card">
-            <img src="./assets/icons/pokeball_colored.png" alt="">
-            <h1>Pokédex</h1>
+            <div class="header-left">
+                <img src="./assets/icons/pokeball_colored.png" alt="">
+                <h1>Pokédex</h1>
+            </div>
+            <div class="header-right">
+                <input id="main-poke_search" class="header-input" type="text" placeholder="Search your Pokémon!">
+                <img onclick="searchByName()" src="./assets/icons/magnifying-glass-solid.svg" alt="">
+            </div>
+
         </div>
     </header>
     <main class="container">

@@ -52,3 +52,36 @@ function showMorePokemon(){
     renderPokecards(pokeCurrentAmount + 1, pokeCurrentAmount + pokeAmountForShowMore);
     pokeCurrentAmount += pokeAmountForShowMore;
 }
+
+async function searchByName() {
+    refInputPokeName = document.getElementById('main-poke_search');
+    inputValue = refInputPokeName.value;
+    refInputPokeName.value = "";
+
+    let allPokemonNames = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1025&offset=0');
+    let allPokemonNamesJSON = await allPokemonNames.json();
+
+    let matchedObjects = allPokemonNamesJSON.results.filter(pokemon => {
+        return pokemon.name.toLowerCase().includes(inputValue.toLowerCase());
+    })
+
+
+    
+
+    let refPokecards =  document.getElementById('main-pokecards');
+    refPokecards.innerHTML = "";
+    renderLoadingScreen();
+    
+    let htmlStructureOfPokemons = "";
+
+    for (let i = 0; i < matchedObjects.length; i++) {
+        let pokemonData = await fetch(matchedObjects[i].url);
+        let pokeDataJson = await pokemonData.json();
+
+        htmlStructureOfPokemons += renderOnePokemonCard(pokeDataJson);
+
+    }
+    refPokecards.removeChild(refPokecards.lastElementChild);
+    refPokecards.insertAdjacentHTML('beforeend', htmlStructureOfPokemons);
+
+}

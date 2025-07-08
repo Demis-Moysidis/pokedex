@@ -10,8 +10,7 @@ function renderTypesForOnePokemon(typeList, i){
 function renderOnePokemonCard(pokeDataJson){
     return /*html*/`
         <div onclick="renderSelectedPokemon(${pokeDataJson.id})" class="card poke_card">
-            <img src="${pokeDataJson.id < 650 ? pokeDataJson.sprites.versions['generation-v']['black-white'].animated.front_default : pokeDataJson.sprites.front_default}" alt="">
-            
+            <img src="${pokeDataJson.id < 650 ? pokeDataJson.sprites.versions['generation-v']['black-white'].animated.front_default : pokeDataJson.sprites.front_default}" alt="">  
             <p>N°${pokeDataJson.id}</p>
             <h3>${pokeDataJson.name.charAt(0).toUpperCase() + pokeDataJson.name.slice(1)}</h3>
             <div class="poke_types">${renderPokeTypes(pokeDataJson.types)}</div>

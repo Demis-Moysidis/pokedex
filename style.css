@@ -25,6 +25,7 @@
 
   --text-gray: #7c8080;
   --text-blue: #061637;
+  --header-color: rgb(228, 31, 37);
 }
 
 * {
@@ -193,13 +194,55 @@ h3 {
 /* Header */
 .header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 12px;
     padding: 24px;
 }
 
-.header img{
+.header-input {
+    padding: 12px 32px;
+    border-radius: 8px;
+    border: 2px solid lightgray;
+    outline: none;
+}
+
+.header-input:focus {
+    border: 2px solid var(--header-color);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;   
+}
+
+.header-left img{
     width: 40px;
+}
+
+.header-right {
+    position: relative;
+}
+
+.header-right img {
+    background-color: var(--header-color);
+    padding: 8px;
+    width: 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(228, 31, 37, 0.7);
+    position: absolute;
+    right: 8px;
+    top: 5px;
+    transition: all 0.2s ease;
+}
+
+.header-right img:hover {
+    transform: scale(1.05);
+}
+
+.header-right img:active {
+    transform: scale(0.95);
 }
 
 /* Main */
