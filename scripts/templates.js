@@ -7,6 +7,15 @@ function renderTypesForOnePokemon(typeList, i){
         `
 }
 
+function renderAbilitiesForOnePokemon(abilitiesList, i){
+    return /*html*/`
+        <p class="ability ${abilitiesList[i].is_hidden ? 'ability-hidden' : 'ability-not-hidden'}">
+            ${abilitiesList[i].ability.name.charAt(0).toUpperCase() + abilitiesList[i].ability.name.slice(1)}
+            ${abilitiesList[i].is_hidden ? '<img class="ability-icon" src="./assets/icons/eye-slash-solid.svg" alt=""></img>' : ''}
+        </p>
+        `
+}
+
 function renderOnePokemonCard(pokeDataJson){
     return /*html*/`
         <div onclick="renderSelectedPokemon(${pokeDataJson.id})" class="card poke_card">
@@ -41,4 +50,47 @@ function renderShowMorePokemonBtn(){
             <button onclick="showMorePokemon()" class="main-more_pokemon_btn">Show More Pokémon</button>
         </div>
         `
+}
+
+function renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson){
+    return /*html*/`
+        
+            <img src="${pokeDataJson.sprites.other['official-artwork'].front_default}" alt="">
+            
+            <div class="flex-column-center">
+                <p class="m-tb text-gray">#${pokeDataJson.id}</p>
+                <h2 class="m-tb">${pokeDataJson.name.charAt(0).toUpperCase() + pokeDataJson.name.slice(1)}</h2>
+                <p class="m-tb text-gray">${findGenerationName(pokeSpeciesDataJson.genera) }</p>
+                <div class="poke_types m-tb">${renderPokeTypes(pokeDataJson.types)}</div>
+            </div>
+
+            <div class="flex-column-center">
+                <h4 class="m-tb">POKÉDEX ENTRY</h4>
+                <p class="m-tb text-brown">${findFlavorText(pokeSpeciesDataJson.flavor_text_entries)}</p>
+            </div>
+
+            <div class="flex-column-center">
+                <h4 class="m-tb">ABILITIES</h4>
+                <div class="flex-row-center flex-wrap">${renderPokeAbilities(pokeDataJson.abilities)}</div>
+            </div>
+
+            <div class="flex-row-center">
+                <div class="flex-column-center flex-1">
+                    <h4 class="m-tb">HEIGHT</h4>
+                    <p class="info-value">${pokeDataJson.height / 10}m</p>
+
+                    <h4 class="m-tb">WEAKNESSES</h4>
+                    <p class="info-value">${pokeDataJson.height / 10}m</p>
+                </div>
+                
+
+                <div class="flex-column-center flex-1">
+                    <h4 class="m-tb">WEIGHT</h4>
+                    <p class="info-value">${pokeDataJson.weight / 10}Kg</p>
+
+                    <h4 class="m-tb">BASE EXP</h4>
+                    <p class="info-value">${pokeDataJson.base_experience}</p>
+                </div>
+            </div>
+    `
 }
