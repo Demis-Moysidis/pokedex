@@ -27,6 +27,14 @@ function renderLoadingHTML(){
         `
 }
 
+function renderNoResultHTML(){
+    return /*html*/`
+        <div class="">
+            <b>Your search did not return any results!</b>
+        </div>
+        `
+}
+
 function renderShowMorePokemonBtn(){
     return /*html*/`
         <div class="main-more_pokemon_container">

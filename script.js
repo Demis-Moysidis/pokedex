@@ -1,12 +1,14 @@
-let pokeCurrentAmount = 30;
-let pokeAmountForShowMore = 50;
-
 let maxNumberOfPokemonToShow = 1025;
-let startNumberOfPekon = 1;
+let startNumberOfPokemon = 1;
+let startAmountOfPokemon = 5;
+
+let pokeCurrentAmount = startAmountOfPokemon;
+let pokeAmountForShowMore = 2;
 
 function init(){
     renderLoadingScreen();
-    renderPokecards(startNumberOfPekon, pokeCurrentAmount);
+    renderPokecards(startNumberOfPokemon, startAmountOfPokemon);
+    eventListenerForInput();
 }
 
 async function renderPokecards(pokeStart, pokeEnd){
@@ -14,7 +16,6 @@ async function renderPokecards(pokeStart, pokeEnd){
     let htmlStructureOfPokemons = "";
 
     for (let i = pokeStart; i <= pokeEnd; i++) {
-
         if(i <= maxNumberOfPokemonToShow){
             let pokeData = await fetch('https://pokeapi.co/api/v2/pokemon/' + i);
             let pokeDataJson = await pokeData.json();
@@ -22,6 +23,7 @@ async function renderPokecards(pokeStart, pokeEnd){
             htmlStructureOfPokemons += renderOnePokemonCard(pokeDataJson);
         }
     }
+
     refPokecards.removeChild(refPokecards.lastElementChild);
     refPokecards.insertAdjacentHTML('beforeend', htmlStructureOfPokemons + (pokeCurrentAmount < maxNumberOfPokemonToShow ? renderShowMorePokemonBtn() : ""));
 }
@@ -43,25 +45,32 @@ function renderLoadingScreen(){
     refPokecards.insertAdjacentHTML('beforeend', renderLoadingHTML());
 }
 
+function renderNoResultScreen(){
+    let refPokecards = document.getElementById('main-pokecards');
+    refPokecards.innerHTML = renderNoResultHTML();
+}
+
 function showMorePokemon(){
     let refPokecards = document.getElementById('main-pokecards');
     refPokecards.removeChild(refPokecards.lastElementChild);
 
-    renderLoadingScreen();
-
+    renderLoadingScreen(); 
     renderPokecards(pokeCurrentAmount + 1, pokeCurrentAmount + pokeAmountForShowMore);
     pokeCurrentAmount += pokeAmountForShowMore;
 }
 
 async function searchByName() {
-    let matchedObjects = await filterBasedOnInput();
-    renderBasedOnInput(matchedObjects);
+    let [matchedObjects, checkIfInputEmpty] = await filterBasedOnInput();
+    renderBasedOnInput(matchedObjects, checkIfInputEmpty);
 }
 
 async function filterBasedOnInput(){
     refInputPokeName = document.getElementById('main-poke_search');
     inputValue = refInputPokeName.value;
-    refInputPokeName.value = "";
+
+    if(inputValue == ""){
+        return [[], true]
+    }
     
     let allPokemonNames = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1025&offset=0');
     let allPokemonNamesJSON = await allPokemonNames.json();
@@ -70,10 +79,23 @@ async function filterBasedOnInput(){
         return pokemon.name.toLowerCase().includes(inputValue.toLowerCase());
     })
 
-    return matchedObjects;
+    return [matchedObjects, false];
 }
 
-async function renderBasedOnInput(matchedObjects){
+async function renderBasedOnInput(matchedObjects, checkIfInputEmpty){
+    if(matchedObjects.length == 0 && !checkIfInputEmpty){
+        renderNoResultScreen();
+        return
+    }else if(checkIfInputEmpty){
+        let refPokecards = document.getElementById('main-pokecards');
+        refPokecards.innerHTML = "";
+        renderLoadingScreen(); 
+
+        renderPokecards(startNumberOfPokemon, startAmountOfPokemon);
+        pokeCurrentAmount = startAmountOfPokemon;
+        return
+    }
+
     let refPokecards =  document.getElementById('main-pokecards');
     refPokecards.innerHTML = "";
     renderLoadingScreen(); 
@@ -87,4 +109,14 @@ async function renderBasedOnInput(matchedObjects){
     
     refPokecards.removeChild(refPokecards.lastElementChild);
     refPokecards.insertAdjacentHTML('beforeend', htmlStructureOfPokemons);
+}
+
+function eventListenerForInput(){
+    refInputPokeName = document.getElementById('main-poke_search');
+
+    refInputPokeName.addEventListener('input', (event) => {
+        if(event.target.value.length >= 3 || event.target.value.length == 0){
+            searchByName();
+        }
+    });
 }
