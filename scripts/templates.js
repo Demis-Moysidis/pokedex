@@ -11,8 +11,14 @@ function renderAbilitiesForOnePokemon(abilitiesList, i){
     return /*html*/`
         <p class="ability ${abilitiesList[i].is_hidden ? 'ability-hidden' : 'ability-not-hidden'}">
             ${abilitiesList[i].ability.name.charAt(0).toUpperCase() + abilitiesList[i].ability.name.slice(1)}
-            ${abilitiesList[i].is_hidden ? '<img class="ability-icon" src="./assets/icons/eye-slash-solid.svg" alt=""></img>' : ''}
+            ${abilitiesList[i].is_hidden ? '<img class="ability-icon" src="./assets/icons/fontawesome/eye-slash-solid.svg" alt=""></img>' : ''}
         </p>
+        `
+}
+
+function renderOneWeaknessHtml(type){
+    return /*html*/`
+            <img class="weakness" title="${type.toUpperCase()}" src="./assets/icons/types-2/${type}.svg" alt="">
         `
 }
 
@@ -52,7 +58,7 @@ function renderShowMorePokemonBtn(){
         `
 }
 
-function renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson){
+async function renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson){
     return /*html*/`
         
             <img src="${checkIfPokemonKoraidonOrMiraidon(pokeDataJson)[0] ? checkIfPokemonKoraidonOrMiraidon(pokeDataJson)[3] : pokeDataJson.sprites.other['official-artwork'].front_default}" alt="">
@@ -80,7 +86,7 @@ function renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson){
                     <p class="info-value">${pokeDataJson.height / 10}m</p>
 
                     <h4 class="m-tb">WEAKNESSES</h4>
-                    <p class="info-value">${pokeDataJson.height / 10}m</p>
+                    <div class="info-value flex-row-center">${await renderPokemonWeaknesses(pokeDataJson)}</div>
                 </div>
                 
 

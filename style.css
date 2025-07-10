@@ -136,15 +136,16 @@ h4 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
     width: 100%;
 }
 
 .flex-row-center {
     display: flex;
     flex-direction: row;
+    justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
     width: 100%;
 }
 
@@ -174,6 +175,35 @@ h4 {
     gap: 8px;
     margin: 0;
     flex: 1 1 auto;
+}
+
+.weakness {
+    width: 25px;
+    cursor: help;
+}
+
+.weakness-2x {
+    width: 25px;
+    height: 25px;
+    background-color: gray;
+    color: white;
+    border-radius: 50%;
+    padding: 3px 3px;
+    margin: 0;
+    font-size: 14px;
+    cursor: help
+}
+
+.weakness-4x {
+    width: 25px;
+    height: 25px;
+    background-color: rgb(201, 75, 75);
+    color: white;
+    border-radius: 50%;
+    padding: 3px 3px;
+    margin: 0;
+    font-size: 14px;
+    cursor: help
 }
 
 .type-icon {
@@ -279,7 +309,7 @@ h4 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 24px;
+    padding: 12px 24px;
 }
 
 .header-input {
@@ -300,7 +330,7 @@ h4 {
 }
 
 .header-left img{
-    width: 40px;
+    width: 150px;
 }
 
 .header-right {

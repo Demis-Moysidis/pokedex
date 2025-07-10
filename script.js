@@ -1,6 +1,6 @@
 let maxNumberOfPokemonToShow = 1302;
 let startNumberOfPokemon = 1;
-let startAmountOfPokemon = 32;
+let startAmountOfPokemon = 7;
 
 let pokeCurrentAmount = startAmountOfPokemon;
 let pokeAmountForShowMore = 5;
@@ -163,7 +163,7 @@ async function renderSelectedPokemon(pokemonId){
     let pokeSpeciesData = await fetch(pokeDataJson.species.url);
     let pokeSpeciesDataJson = await pokeSpeciesData.json();
 
-    refSelectedPokecard = document.getElementById('main-selected_pokecard').innerHTML = renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson);
+    refSelectedPokecard = document.getElementById('main-selected_pokecard').innerHTML = await renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson);
 }
 
 function findGenerationName(generationJsonList){
@@ -205,4 +205,48 @@ function checkIfPokemonKoraidonOrMiraidon(pokeDataJson){
     }else{
         return false
     }
+}
+
+async function renderPokemonWeaknesses(pokeDataJson){
+    if(pokeDataJson.types.length == 1){
+        return await renderWeaknessForOneType(pokeDataJson);
+    }else{
+        return await renderWeaknessForTwoType(pokeDataJson);
+    }
+}
+
+async function renderWeaknessForOneType(pokeDataJson){
+        let weaknessesHtml = "";
+        let typeData = await fetch(pokeDataJson.types[0].type.url);
+        let typeDataJson = await typeData.json();
+        weaknessesHtml = /*html*/`<p title="Double Damage From" class="weakness-2x">2x</p>`
+        typeDataJson.damage_relations.double_damage_from.forEach(type => {
+            weaknessesHtml += renderOneWeaknessHtml(type.name);
+        }); 
+        return weaknessesHtml;
+}
+
+async function renderWeaknessForTwoType(pokeDataJson) {
+        let weaknessesHtml = ""; 
+        let allQuadrupleDamage = [], allDoubleDamage = [], allHalfDamage = [], allNoDamage = []
+        for (let i = 0; i < pokeDataJson.types.length; i++) {
+            let typeData = await fetch(pokeDataJson.types[i].type.url);
+            let typeDataJson = await typeData.json();
+            typeDataJson.damage_relations.double_damage_from.forEach(type => allDoubleDamage.push(type.name));
+            typeDataJson.damage_relations.half_damage_from.forEach(type => allHalfDamage.push(type.name));
+            typeDataJson.damage_relations.no_damage_from.forEach(type => allNoDamage.push(type.name));
+        }
+
+        allQuadrupleDamage = allDoubleDamage.filter((type, i) => allDoubleDamage.indexOf(type) !== i);
+        allDoubleDamage = allDoubleDamage.filter((type) => allDoubleDamage.indexOf(type) === allDoubleDamage.lastIndexOf(type));
+        allDoubleDamage = allDoubleDamage.filter((type) => !allNoDamage.includes(type));
+        allDoubleDamage = allDoubleDamage.filter((type) => !allHalfDamage.includes(type));
+
+        if(allQuadrupleDamage.length > 0){
+            weaknessesHtml = /*html*/`<p title="Quadruple Damage From" class="weakness-4x">4x</p>`
+            allQuadrupleDamage.forEach(type => weaknessesHtml += renderOneWeaknessHtml(type));
+        }
+        weaknessesHtml += /*html*/`<p title="Double Damage From" class="weakness-2x">2x</p>`
+        allDoubleDamage.forEach(type => weaknessesHtml += renderOneWeaknessHtml(type)); 
+        return weaknessesHtml;
 }
