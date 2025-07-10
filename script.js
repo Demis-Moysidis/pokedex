@@ -1,6 +1,6 @@
-let maxNumberOfPokemonToShow = 1025;
+let maxNumberOfPokemonToShow = 1302;
 let startNumberOfPokemon = 1;
-let startAmountOfPokemon = 10;
+let startAmountOfPokemon = 32;
 
 let pokeCurrentAmount = startAmountOfPokemon;
 let pokeAmountForShowMore = 5;
@@ -22,7 +22,11 @@ async function renderPokecards(pokeStart, pokeEnd){
 
     for (let i = pokeStart; i <= pokeEnd; i++) {
         if(i <= maxNumberOfPokemonToShow){
-            let pokeData = await fetch('https://pokeapi.co/api/v2/pokemon/' + i);
+            let j = i;
+            if(i > 1025){
+                j = i + 8975;
+            }
+            let pokeData = await fetch('https://pokeapi.co/api/v2/pokemon/' + j);
             let pokeDataJson = await pokeData.json();
 
             htmlStructureOfPokemons += renderOnePokemonCard(pokeDataJson);
@@ -83,7 +87,7 @@ async function filterBasedOnInput(){
         return [[], true]
     }
     
-    let allPokemonNames = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1025&offset=0');
+    let allPokemonNames = await fetch('https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0');
     let allPokemonNamesJSON = await allPokemonNames.json();
     
     let matchedObjects = allPokemonNamesJSON.results.filter(pokemon => {
@@ -156,7 +160,7 @@ async function renderSelectedPokemon(pokemonId){
     let pokeData = await fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonId);
     let pokeDataJson = await pokeData.json();
 
-    let pokeSpeciesData = await fetch('https://pokeapi.co/api/v2/pokemon-species/' + pokemonId);
+    let pokeSpeciesData = await fetch(pokeDataJson.species.url);
     let pokeSpeciesDataJson = await pokeSpeciesData.json();
 
     refSelectedPokecard = document.getElementById('main-selected_pokecard').innerHTML = renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson);
@@ -170,4 +174,35 @@ function findGenerationName(generationJsonList){
 function findFlavorText(flavorTextJsonList){
     let matchedFlavorText = flavorTextJsonList.find(flavorText => flavorText.language.name == 'en');
     return matchedFlavorText.flavor_text.replace(/\f/g, ' ')
+}
+
+function findPokemonGif(pokeDataJson){
+    if(pokeDataJson.sprites.versions['generation-v']['black-white'].animated.front_default != null){
+        return pokeDataJson.sprites.versions['generation-v']['black-white'].animated.front_default;
+    }else if(pokeDataJson.sprites.other.showdown.front_default != null){
+        return pokeDataJson.sprites.other.showdown.front_default;
+    }else if(checkIfPokemonKoraidonOrMiraidon(pokeDataJson)[0]){     
+        return checkIfPokemonKoraidonOrMiraidon(pokeDataJson)[2]     
+    }else{
+        return pokeDataJson.sprites.front_default
+    }
+}
+
+function checkIfPokemonKoraidonOrMiraidon(pokeDataJson){
+    if( pokeDataJson.name == "koraidon-limited-build" || 
+        pokeDataJson.name == "koraidon-sprinting-build" ||
+        pokeDataJson.name == "koraidon-swimming-build" || 
+        pokeDataJson.name == "koraidon-gliding-build" 
+    ){
+        return [true, 'koraidon', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1007.png', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1007.png']
+    }else if(
+        pokeDataJson.name == 'miraidon-glide-mode' || 
+        pokeDataJson.name == 'miraidon-aquatic-mode' ||
+        pokeDataJson.name == 'miraidon-drive-mode' || 
+        pokeDataJson.name == 'miraidon-low-power-mode'
+    ){
+        return [true, 'miraidon', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1008.png', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1008.png']
+    }else{
+        return false
+    }
 }

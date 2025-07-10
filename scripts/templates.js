@@ -19,7 +19,7 @@ function renderAbilitiesForOnePokemon(abilitiesList, i){
 function renderOnePokemonCard(pokeDataJson){
     return /*html*/`
         <div onclick="renderSelectedPokemon(${pokeDataJson.id})" class="card poke_card">
-            <img src="${pokeDataJson.id < 650 ? pokeDataJson.sprites.versions['generation-v']['black-white'].animated.front_default : pokeDataJson.sprites.front_default}" alt="">  
+            <img src="${findPokemonGif(pokeDataJson)}" alt="">  
             <p>N°${pokeDataJson.id}</p>
             <h3>${pokeDataJson.name.charAt(0).toUpperCase() + pokeDataJson.name.slice(1)}</h3>
             <div class="poke_types">${renderPokeTypes(pokeDataJson.types)}</div>
@@ -55,7 +55,7 @@ function renderShowMorePokemonBtn(){
 function renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson){
     return /*html*/`
         
-            <img src="${pokeDataJson.sprites.other['official-artwork'].front_default}" alt="">
+            <img src="${checkIfPokemonKoraidonOrMiraidon(pokeDataJson)[0] ? checkIfPokemonKoraidonOrMiraidon(pokeDataJson)[3] : pokeDataJson.sprites.other['official-artwork'].front_default}" alt="">
             
             <div class="flex-column-center">
                 <p class="m-tb text-gray">#${pokeDataJson.id}</p>

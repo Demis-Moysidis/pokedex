@@ -110,6 +110,7 @@ h4 {
     top: 0;
     left: 50%;
     transform: translate(-50%, -50%);
+    max-height: 110px;
 }
 
 .poke_card p, .poke_card h3, .poke_types p {
@@ -346,7 +347,7 @@ main {
     height: 100%;
     padding-left: 8px;
     padding-right: 8px;
-    padding-top: 50px;
+    padding-top: 60px;
     padding-bottom: 20px;
     position: relative;
 }
@@ -369,7 +370,7 @@ main {
 }
 
 .main-selected_pokecard > img {
-    width: 200px;
+    max-height: 200px;
     position: absolute;
     top: -100px;
     left: 50%;
