@@ -8,6 +8,8 @@ let pokeAmountForShowMore = 5;
 let previousInputLength = 0;
 let fetchRequestId = 0;
 
+let selectedPokemonId = 0;
+
 function init(){
     renderLoadingScreen();
     renderPokecards(startNumberOfPokemon, startAmountOfPokemon);
@@ -87,6 +89,8 @@ async function filterBasedOnInput(){
         return [[], true]
     }
     
+    let currentId = ++fetchRequestId;
+
     let allPokemonNames = await fetch('https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0');
     let allPokemonNamesJSON = await allPokemonNames.json();
     
@@ -94,7 +98,10 @@ async function filterBasedOnInput(){
         return pokemon.name.toLowerCase().includes(inputValue.toLowerCase());
     })
 
-    return [matchedObjects, false];
+    if(currentId == fetchRequestId){
+        return [matchedObjects, false]; 
+    }
+
 }
 
 async function renderBasedOnInput(matchedObjects, checkIfInputEmpty){
@@ -129,20 +136,22 @@ function eventListenerForInput(){
     let refInputHint = document.getElementById('main-input_hint');
 
     refInputPokeName.addEventListener('input', (event) => {
-        if(event.target.value.length == 3){
-            previousInputLength = 3;
-        }else if(event.target.value.length == 1){
-            previousInputLength = 0;
-        }
-
-        if(event.target.value.length >= 3 || event.target.value.length == 0){
+        if(event.target.value.length >= 3 ){
             searchByName();
             refInputHint.classList.add('d_none');
-        }else if(event.target.value.length == 2 && previousInputLength == 3){
+        }else if((event.target.value.length <= 2 && previousInputLength == 3)){
             renderFirstPartOfPokemon();
             refInputHint.classList.remove('d_none');
-        } else{
-            refInputHint.classList.remove('d_none');
+        }
+
+        if(event.target.value.length == 0){
+            refInputHint.classList.add('d_none');
+        }
+
+        if(event.target.value.length >= 3){
+            previousInputLength = 3;
+        }else if(event.target.value.length < 3){
+            previousInputLength = 0;
         }
     });
 }
@@ -156,6 +165,12 @@ function renderFirstPartOfPokemon(){
 }
 
 async function renderSelectedPokemon(pokemonId){
+
+    if(selectedPokemonId == pokemonId){
+        return
+    }else{
+        selectedPokemonId = pokemonId;
+    }
 
     let pokeData = await fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonId);
     let pokeDataJson = await pokeData.json();
@@ -194,14 +209,22 @@ function checkIfPokemonKoraidonOrMiraidon(pokeDataJson){
         pokeDataJson.name == "koraidon-swimming-build" || 
         pokeDataJson.name == "koraidon-gliding-build" 
     ){
-        return [true, 'koraidon', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1007.png', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1007.png']
+        return [true, 
+                'koraidon', 
+                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1007.png', 
+                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1007.png'
+            ]
     }else if(
         pokeDataJson.name == 'miraidon-glide-mode' || 
         pokeDataJson.name == 'miraidon-aquatic-mode' ||
         pokeDataJson.name == 'miraidon-drive-mode' || 
         pokeDataJson.name == 'miraidon-low-power-mode'
     ){
-        return [true, 'miraidon', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1008.png', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1008.png']
+        return [true, 
+                'miraidon', 
+                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1008.png', 
+                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1008.png'
+            ]
     }else{
         return false
     }

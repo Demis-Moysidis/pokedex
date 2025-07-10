@@ -11,7 +11,7 @@ function renderAbilitiesForOnePokemon(abilitiesList, i){
     return /*html*/`
         <p class="ability ${abilitiesList[i].is_hidden ? 'ability-hidden' : 'ability-not-hidden'}">
             ${abilitiesList[i].ability.name.charAt(0).toUpperCase() + abilitiesList[i].ability.name.slice(1)}
-            ${abilitiesList[i].is_hidden ? '<img class="ability-icon" src="./assets/icons/fontawesome/eye-slash-solid.svg" alt=""></img>' : ''}
+            ${abilitiesList[i].is_hidden ? '<img class="ability-icon" src="./assets/icons/fontawesome/eye-slash-solid.svg" title="Hidden Ability" alt=""></img>' : ''}
         </p>
         `
 }
@@ -80,23 +80,30 @@ async function renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson){
                 <div class="flex-row-center flex-wrap">${renderPokeAbilities(pokeDataJson.abilities)}</div>
             </div>
 
+            
             <div class="flex-row-center">
-                <div class="flex-column-center flex-1">
+                <div class="flex-column-center">
                     <h4 class="m-tb">HEIGHT</h4>
                     <p class="info-value">${pokeDataJson.height / 10}m</p>
+                </div>
 
+                <div class="flex-column-center">
+                    <h4 class="m-tb">WEIGHT</h4>
+                    <p class="info-value">${pokeDataJson.weight / 10}Kg</p>
+                </div>
+            </div>
+                
+
+            <div class="flex-row-center">
+                <div class="flex-column-center">
                     <h4 class="m-tb">WEAKNESSES</h4>
                     <div class="info-value flex-row-center">${await renderPokemonWeaknesses(pokeDataJson)}</div>
                 </div>
-                
-
-                <div class="flex-column-center flex-1">
-                    <h4 class="m-tb">WEIGHT</h4>
-                    <p class="info-value">${pokeDataJson.weight / 10}Kg</p>
-
+            
+                <div class="flex-column-center">
                     <h4 class="m-tb">BASE EXP</h4>
                     <p class="info-value">${pokeDataJson.base_experience}</p>
                 </div>
-            </div>
+            </div> 
     `
 }
