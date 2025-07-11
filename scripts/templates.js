@@ -10,7 +10,7 @@ function renderTypesForOnePokemon(typeList, i){
 function renderAbilitiesForOnePokemon(abilitiesList, i){
     return /*html*/`
         <p class="ability ${abilitiesList[i].is_hidden ? 'ability-hidden' : 'ability-not-hidden'}">
-            ${abilitiesList[i].ability.name.charAt(0).toUpperCase() + abilitiesList[i].ability.name.slice(1)}
+            ${removeDashesAndCapitalizeFirstLetter(abilitiesList[i].ability.name)}
             ${abilitiesList[i].is_hidden ? '<img class="ability-icon" src="./assets/icons/fontawesome/eye-slash-solid.svg" title="Hidden Ability" alt=""></img>' : ''}
         </p>
         `
@@ -22,12 +22,54 @@ function renderOneWeaknessHtml(type){
         `
 }
 
+function renderOneStat(stat){
+    return /*html*/`
+            <div class="flex-column-center flex-1 stat" title="${removeDashesAndCapitalizeFirstLetter(stat.stat.name)}">
+                <p class="m-tb stat-name stat-${statShortForms[stat.stat.name]}">${statShortForms[stat.stat.name]}</p>
+                <p class="m-tb stat-value">${stat.base_stat}</p>
+            </div>
+        `
+}
+
+function renderTotalStat(pokemonStatsList){
+    return /*html*/`
+            <div class="flex-column-center flex-1 stat stat-TOT-bg" title="Total">
+                <p class="m-tb stat-name stat-TOT">${statShortForms['total']}</p>
+                <p class="m-tb stat-value">${sumOfStats(pokemonStatsList)}</p>
+            </div>
+        `
+}
+
+function renderThreeEvolutions(imgFirstEvolution, imgSecondEvolution, imgThirdEvolution, levelForSecondEvolution, levelForThirdEvolution, pokeIdFirstEvolution, pokeIdSecondEvolution, pokeIdThirdEvolution){
+    return /*html*/`
+        <img onclick="renderSelectedPokemon(${pokeIdFirstEvolution})" src="${imgFirstEvolution}" alt="">
+        <p class="evolution-info flex-1">${levelForSecondEvolution}</p>
+        <img onclick="renderSelectedPokemon(${pokeIdSecondEvolution})" src="${imgSecondEvolution}" alt="">
+        <p class="evolution-info flex-1">${levelForThirdEvolution}</p>
+        <img onclick="renderSelectedPokemon(${pokeIdThirdEvolution})" src="${imgThirdEvolution}" alt="">
+    `
+}
+
+function renderTwoEvolutions(imgFirstEvolution, imgSecondEvolution, levelForSecondEvolution, pokeIdFirstEvolution, pokeIdSecondEvolution){
+    return /*html*/`
+        <img onclick="renderSelectedPokemon(${pokeIdFirstEvolution})" src="${imgFirstEvolution}" alt="">
+        <p class="evolution-info flex-1">${levelForSecondEvolution}</p>
+        <img onclick="renderSelectedPokemon(${pokeIdSecondEvolution})" src="${imgSecondEvolution}" alt="">
+    `
+}
+
+function renderOneEvolution(imgFirstEvolution, pokeIdFirstEvolution){
+    return /*html*/`
+        <img onclick="renderSelectedPokemon(${pokeIdFirstEvolution})" src="${imgFirstEvolution}" alt="">
+    `
+}
+
 function renderOnePokemonCard(pokeDataJson){
     return /*html*/`
         <div onclick="renderSelectedPokemon(${pokeDataJson.id})" class="card poke_card">
             <img src="${findPokemonGif(pokeDataJson)}" alt="">  
             <p>N°${pokeDataJson.id}</p>
-            <h3>${modifyPokeName(pokeDataJson.name)}</h3>
+            <h3>${removeDashesAndCapitalizeFirstLetter(pokeDataJson.name)}</h3>
             <div class="poke_types">${renderPokeTypes(pokeDataJson.types)}</div>
         </div>
         `
@@ -58,14 +100,14 @@ function renderShowMorePokemonBtn(){
         `
 }
 
-async function renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson){
+async function renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson, pokeEvolutionDataJson){
     return /*html*/`
         
             <img src="${checkIfPokemonKoraidonOrMiraidon(pokeDataJson)[0] ? checkIfPokemonKoraidonOrMiraidon(pokeDataJson)[3] : pokeDataJson.sprites.other['official-artwork'].front_default}" alt="">
             
             <div class="flex-column-center">
                 <p class="m-tb text-gray">#${pokeDataJson.id}</p>
-                <h2 class="m-tb">${modifyPokeName(pokeDataJson.name)}</h2>
+                <h2 class="m-tb">${removeDashesAndCapitalizeFirstLetter(pokeDataJson.name)}</h2>
                 <p class="m-tb text-gray">${findGenerationName(pokeSpeciesDataJson.genera) }</p>
                 <div class="poke_types m-tb">${renderPokeTypes(pokeDataJson.types)}</div>
             </div>
@@ -105,5 +147,15 @@ async function renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson){
                     <p class="info-value">${pokeDataJson.base_experience}</p>
                 </div>
             </div> 
+
+            <div class="flex-column-center">
+                <h4 class="m-tb">STATS</h4>
+                <div class="flex-row-center">${renderPokemonStats(pokeDataJson.stats)}</div>
+            </div>
+
+            <div class="flex-column-center evolution">
+                <h4 class="m-tb">EVOLUTION</h4>
+                <div class="flex-row-center">${await renderPokemonEvolutions(pokeEvolutionDataJson)}</div>
+            </div>
     `
 }
