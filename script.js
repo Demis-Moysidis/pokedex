@@ -1,9 +1,9 @@
 let maxNumberOfPokemonToShow = 1302;
-let startNumberOfPokemon = 1;
-let startAmountOfPokemon = 7;
+let startNumberOfPokemon = 1000;
+let startAmountOfPokemon = 1032;
 
 let pokeCurrentAmount = startAmountOfPokemon;
-let pokeAmountForShowMore = 5;
+let pokeAmountForShowMore = 32;
 
 let previousInputLength = 0;
 let fetchRequestId = 0;
@@ -272,4 +272,19 @@ async function renderWeaknessForTwoType(pokeDataJson) {
         weaknessesHtml += /*html*/`<p title="Double Damage From" class="weakness-2x">2x</p>`
         allDoubleDamage.forEach(type => weaknessesHtml += renderOneWeaknessHtml(type)); 
         return weaknessesHtml;
+}
+
+function modifyPokeName(pokeName){
+    let indexOfDashes = [];
+    for (let i = 0; i < pokeName.length; i++) {
+        if(pokeName.charAt(i) == '-') indexOfDashes.push(i);
+    }
+    for (let j = 0; j < indexOfDashes.length; j++) {
+        pokeName = pokeName.slice(0, indexOfDashes[j] + 1) 
+        + pokeName.charAt(indexOfDashes[j] + 1).toUpperCase() 
+        + pokeName.slice(indexOfDashes[j] + 2);
+    }
+    pokeName = (pokeName.charAt(0).toUpperCase() + pokeName.slice(1)).replace('-', ' ');
+
+    return pokeName
 }

@@ -27,7 +27,7 @@ function renderOnePokemonCard(pokeDataJson){
         <div onclick="renderSelectedPokemon(${pokeDataJson.id})" class="card poke_card">
             <img src="${findPokemonGif(pokeDataJson)}" alt="">  
             <p>N°${pokeDataJson.id}</p>
-            <h3>${pokeDataJson.name.charAt(0).toUpperCase() + pokeDataJson.name.slice(1)}</h3>
+            <h3>${modifyPokeName(pokeDataJson.name)}</h3>
             <div class="poke_types">${renderPokeTypes(pokeDataJson.types)}</div>
         </div>
         `
@@ -65,7 +65,7 @@ async function renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson){
             
             <div class="flex-column-center">
                 <p class="m-tb text-gray">#${pokeDataJson.id}</p>
-                <h2 class="m-tb">${pokeDataJson.name.charAt(0).toUpperCase() + pokeDataJson.name.slice(1)}</h2>
+                <h2 class="m-tb">${modifyPokeName(pokeDataJson.name)}</h2>
                 <p class="m-tb text-gray">${findGenerationName(pokeSpeciesDataJson.genera) }</p>
                 <div class="poke_types m-tb">${renderPokeTypes(pokeDataJson.types)}</div>
             </div>
