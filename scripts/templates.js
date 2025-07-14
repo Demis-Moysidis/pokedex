@@ -84,6 +84,15 @@ function renderLoadingHTML(){
         `
 }
 
+function renderLoadingHTMLForSelectedPokemon(){
+    return /*html*/`
+        <div class="selected_pokemon-loading">
+            <img src="./assets/icons/pokeball_gray.png" class="rotate_logo" alt="">
+            <p>Loading...</p>
+        </div>
+        `
+}
+
 function renderNoResultHTML(){
     return /*html*/`
         <div class="">
@@ -100,10 +109,27 @@ function renderShowMorePokemonBtn(){
         `
 }
 
+function renderPreviousPokemonHtml(dataPokemonJson){
+    return /*html*/`
+        <img class="main-selected_pokemon-img" src="${findPokemonGif(dataPokemonJson)}" alt="">
+        <b>${sliceString(removeDashesAndCapitalizeFirstLetter(dataPokemonJson.name))}</b>
+        <p>#${dataPokemonJson.id}</p>
+    `
+}
+
+function renderNextPokemonHtml(dataPokemonJson){
+    return /*html*/`
+        <p>#${dataPokemonJson.id}</p>
+        <b>${sliceString(removeDashesAndCapitalizeFirstLetter(dataPokemonJson.name))}</b>
+        <img class="main-selected_pokemon-img" src="${findPokemonGif(dataPokemonJson)}" alt="">
+    `
+}
+
 async function renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson, pokeEvolutionDataJson){
     return /*html*/`
-        
-            <img src="${checkIfPokemonKoraidonOrMiraidon(pokeDataJson)[0] ? checkIfPokemonKoraidonOrMiraidon(pokeDataJson)[3] : pokeDataJson.sprites.other['official-artwork'].front_default}" alt="">
+
+            <img onclick="closeSelectedPokemon()" class="main-selected_pokecard_close" src="./assets/icons/fontawesome/xmark-solid.svg" alt="">
+            <img class="main-selected_pokecard_img" src="${checkIfPokemonKoraidonOrMiraidon(pokeDataJson)[0] ? checkIfPokemonKoraidonOrMiraidon(pokeDataJson)[3] : pokeDataJson.sprites.other['official-artwork'].front_default}" alt="">
             
             <div class="flex-column-center">
                 <p class="m-tb text-gray">#${pokeDataJson.id}</p>
@@ -139,7 +165,7 @@ async function renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson, pok
             <div class="flex-row-center">
                 <div class="flex-column-center">
                     <h4 class="m-tb">WEAKNESSES</h4>
-                    <div class="info-value flex-row-center">${await renderPokemonWeaknesses(pokeDataJson)}</div>
+                    <div class="info-value flex-row-center flex-wrap-media">${await renderPokemonWeaknesses(pokeDataJson)}</div>
                 </div>
             
                 <div class="flex-column-center">
@@ -148,14 +174,26 @@ async function renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson, pok
                 </div>
             </div> 
 
-            <div class="flex-column-center">
+            <div class="flex-column-center ">
                 <h4 class="m-tb">STATS</h4>
-                <div class="flex-row-center">${renderPokemonStats(pokeDataJson.stats)}</div>
+                <div class="flex-row-center flex-wrap-media">${renderPokemonStats(pokeDataJson.stats)}</div>
             </div>
 
             <div class="flex-column-center evolution">
                 <h4 class="m-tb">EVOLUTION</h4>
-                <div class="flex-row-center">${await renderPokemonEvolutions(pokeEvolutionDataJson)}</div>
+                <div class="flex-row-center flex-wrap-media">${await renderPokemonEvolutions(pokeEvolutionDataJson)}</div>
+            </div>
+
+            <div class="main-selected_pokemon-change_pokemon flex-row-center flex-space-between">
+                <div onclick="renderSelectedPokemon(${pokeDataJson.id == 1 ? 10277 : pokeDataJson.id -1})" class="flex-row-center flex-row-center-gab-3 main-selected_pokemon-previous">
+                    <img class="main-selected_pokemon-arrow-icons" src="./assets/icons/fontawesome/less-than-solid.svg" alt="">
+                    ${await renderPreviousOrNextPokemon(pokeDataJson.id == 1 ? 10277 : pokeDataJson.id -1, 'previous')}
+                </div>
+                <div class="main-selected_pokemon-divider"></div>
+                <div onclick="renderSelectedPokemon(${pokeDataJson.id == 10277 ? 1 : pokeDataJson.id + 1})" class="flex-row-center flex-row-center-gab-3 main-selected_pokemon-next">
+                    ${await renderPreviousOrNextPokemon(pokeDataJson.id == 10277 ? 1 : pokeDataJson.id + 1, 'next')}
+                    <img class="main-selected_pokemon-arrow-icons" src="./assets/icons/fontawesome/greater-than-solid.svg" alt="">
+                </div>
             </div>
     `
 }

@@ -1,6 +1,6 @@
 let maxNumberOfPokemonToShow = 1302;
 let startNumberOfPokemon = 1;
-let startAmountOfPokemon = 12;
+let startAmountOfPokemon = 10;
 
 let pokeCurrentAmount = startAmountOfPokemon;
 let pokeAmountForShowMore = 32;
@@ -60,6 +60,11 @@ function renderPokeAbilities(abilitiesList){
 function renderLoadingScreen(){
     let refPokecards = document.getElementById('main-pokecards');
     refPokecards.insertAdjacentHTML('beforeend', renderLoadingHTML());
+}
+
+function renderLoadingScreenForSelectedPokemon(){
+    let refSelectedPokemon = document.getElementById('main-selected_pokecard');
+    refSelectedPokemon.innerHTML = renderLoadingHTMLForSelectedPokemon();
 }
 
 function renderNoResultScreen(){
@@ -170,6 +175,8 @@ async function renderSelectedPokemon(pokemonId){
         return
     }else{
         selectedPokemonId = pokemonId;
+        renderLoadingScreenForSelectedPokemon();
+        document.getElementById('main-selected_pokemon').classList.remove('d_none-selected_pokemon');
     }
 
     let pokeData = await fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonId);
@@ -318,58 +325,92 @@ async function renderPokemonEvolutions(pokeEvolutionDataJson){
     let levelForThirdEvolution =  'Lvl ' + pokeEvolutionDataJson.chain.evolves_to[0]?.evolves_to[0]?.evolution_details[0]?.min_level;    
     let levelForSecondEvolution = 'Lvl ' + pokeEvolutionDataJson.chain.evolves_to[0]?.evolution_details[0]?.min_level;
 
-    let nameOfFirstEvolution = pokeEvolutionDataJson.chain.species.name;
-    let nameOfSecondEvolution = pokeEvolutionDataJson.chain.evolves_to[0]?.species.name;
-    let nameOfThirdEvolution = pokeEvolutionDataJson.chain.evolves_to[0]?.evolves_to[0]?.species.name;
+    let dataFirstSpecies = await fetch(pokeEvolutionDataJson.chain.species.url);
+    let dataFirstSpeciesJson = await dataFirstSpecies.json();
 
-    if(nameOfSecondEvolution == 'toxtricity'){
-        nameOfSecondEvolution = 'toxtricity-amped';
-    }else if(nameOfSecondEvolution == 'meowstic'){
-        nameOfSecondEvolution = 'meowstic-male';
+    let dataSecondSpeciesJson;
+    if(pokeEvolutionDataJson.chain.evolves_to[0]?.species?.url){
+        let dataSecondSpecies = await fetch(pokeEvolutionDataJson.chain.evolves_to[0]?.species?.url);
+        dataSecondSpeciesJson = await dataSecondSpecies.json();
     }
+
+    let dataThirdSpeciesJson;
+    if(pokeEvolutionDataJson.chain.evolves_to[0]?.evolves_to[0]?.species?.url){
+        let dataThirdSpecies = await fetch(pokeEvolutionDataJson.chain.evolves_to[0]?.evolves_to[0]?.species?.url);
+        dataThirdSpeciesJson = await dataThirdSpecies.json();
+    }
+
+    let idOfFirstEvolution = dataFirstSpeciesJson?.id;
+    let idOfSecondEvolution = dataSecondSpeciesJson?.id;
+    let idOfThirdEvolution = dataThirdSpeciesJson?.id;
     
     console.log(levelForThirdEvolution, levelForSecondEvolution,
-               nameOfFirstEvolution,nameOfSecondEvolution,nameOfThirdEvolution
+               idOfFirstEvolution,idOfSecondEvolution,idOfThirdEvolution
 
     )
 
-    let dataFirstEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + nameOfFirstEvolution);
+    let dataFirstEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + idOfFirstEvolution);
     let dataFirstEvolutionJson = await dataFirstEvolution.json();
 
     let imgFirstEvolution = dataFirstEvolutionJson.sprites.other['official-artwork'].front_default;
     let imgSecondEvolution, imgThirdEvolution;
 
-    if(nameOfThirdEvolution){
-        let dataThirdEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + nameOfThirdEvolution);
+    if(idOfThirdEvolution){
+        let dataThirdEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + idOfThirdEvolution);
         let dataThirdEvolutionJson = await dataThirdEvolution.json();
         imgThirdEvolution = dataThirdEvolutionJson.sprites.other['official-artwork'].front_default;
 
-        let dataSecondEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + nameOfSecondEvolution);
+        let dataSecondEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + idOfSecondEvolution);
         let dataSecondEvolutionJson = await dataSecondEvolution.json();
         imgSecondEvolution = dataSecondEvolutionJson.sprites.other['official-artwork'].front_default;
 
         if(pokeEvolutionDataJson.chain.evolves_to[0]?.evolves_to[0]?.evolution_details[0]?.min_level == null){
-            levelForThirdEvolution = removeDashesAndCapitalizeFirstLetter(pokeEvolutionDataJson.chain.evolves_to[0].evolves_to[0].evolution_details[0].trigger.name);
+            levelForThirdEvolution = 'No Lvl';
         }
 
-        if(pokeEvolutionDataJson.chain.evolves_to[0].evolution_details[0].min_level == null){
-            levelForSecondEvolution = 'Friendship';
+        if(pokeEvolutionDataJson.chain.evolves_to[0]?.evolution_details[0]?.min_level == null){
+            levelForSecondEvolution = 'No Lvl';
         }
         
         return renderThreeEvolutions(imgFirstEvolution, imgSecondEvolution, imgThirdEvolution, levelForSecondEvolution, levelForThirdEvolution, dataFirstEvolutionJson.id, dataSecondEvolutionJson.id, dataThirdEvolutionJson.id) 
     }
 
-    if(nameOfSecondEvolution){
-        let dataSecondEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + nameOfSecondEvolution);
+    if(idOfSecondEvolution){
+        let dataSecondEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + idOfSecondEvolution);
         let dataSecondEvolutionJson = await dataSecondEvolution.json();
         imgSecondEvolution = dataSecondEvolutionJson.sprites.other['official-artwork'].front_default;
 
-        if(pokeEvolutionDataJson.chain.evolves_to[0].evolution_details[0].min_level == null){
-            levelForSecondEvolution = removeDashesAndCapitalizeFirstLetter(pokeEvolutionDataJson.chain.evolves_to[0].evolution_details[0].trigger.name);
+        if(pokeEvolutionDataJson.chain.evolves_to[0]?.evolution_details[0]?.min_level == null){
+            levelForSecondEvolution = 'No Lvl';
         }
 
         return renderTwoEvolutions(imgFirstEvolution, imgSecondEvolution, levelForSecondEvolution, dataFirstEvolutionJson.id, dataSecondEvolutionJson.id)
     }
 
     return renderOneEvolution(imgFirstEvolution, dataFirstEvolutionJson.id)
+}
+
+function closeSelectedPokemon(){
+    document.getElementById('main-selected_pokemon').classList.add('d_none-selected_pokemon');
+    selectedPokemonId = 0;
+}
+
+async function renderPreviousOrNextPokemon(id, direction){
+    let dataPokemon = await fetch('https://pokeapi.co/api/v2/pokemon/' + id);
+    let dataPokemonJson = await dataPokemon.json();
+
+    if(direction == 'previous'){
+        return renderPreviousPokemonHtml(dataPokemonJson);
+    }else if(direction == 'next'){
+        return renderNextPokemonHtml(dataPokemonJson);
+    }
+}
+
+function sliceString(string){
+    if(string.length > 10){
+        return string.slice(0, 10) + ' ...'
+    }else{
+        return string
+    }
+    
 }
