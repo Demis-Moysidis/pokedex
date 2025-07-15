@@ -117,6 +117,10 @@ async function renderBasedOnInput(matchedObjects, checkIfInputEmpty){
         return
     }
 
+    renderMatchedObjects(matchedObjects);
+}
+
+async function renderMatchedObjects(matchedObjects){
     let refPokecards =  document.getElementById('main-pokecards');
     refPokecards.innerHTML = "";
     renderLoadingScreen(); 
@@ -261,19 +265,10 @@ async function renderWeaknessForOneType(pokeDataJson){
 
 async function renderWeaknessForTwoType(pokeDataJson) {
         let weaknessesHtml = ""; 
-        let allQuadrupleDamage = [], allDoubleDamage = [], allHalfDamage = [], allNoDamage = []
-        for (let i = 0; i < pokeDataJson.types.length; i++) {
-            let typeData = await fetch(pokeDataJson.types[i].type.url);
-            let typeDataJson = await typeData.json();
-            typeDataJson.damage_relations.double_damage_from.forEach(type => allDoubleDamage.push(type.name));
-            typeDataJson.damage_relations.half_damage_from.forEach(type => allHalfDamage.push(type.name));
-            typeDataJson.damage_relations.no_damage_from.forEach(type => allNoDamage.push(type.name));
-        }
+        let [allQuadrupleDamage, allDoubleDamage, allHalfDamage, allNoDamage] = await getDamageData(pokeDataJson);
 
         allQuadrupleDamage = allDoubleDamage.filter((type, i) => allDoubleDamage.indexOf(type) !== i);
-        allDoubleDamage = allDoubleDamage.filter((type) => allDoubleDamage.indexOf(type) === allDoubleDamage.lastIndexOf(type));
-        allDoubleDamage = allDoubleDamage.filter((type) => !allNoDamage.includes(type));
-        allDoubleDamage = allDoubleDamage.filter((type) => !allHalfDamage.includes(type));
+        allDoubleDamage = filterDoubleDamage(allDoubleDamage, allNoDamage, allHalfDamage);
 
         if(allQuadrupleDamage.length > 0){
             weaknessesHtml = renderQuadrupleDamageHtml();
@@ -282,6 +277,26 @@ async function renderWeaknessForTwoType(pokeDataJson) {
         weaknessesHtml += renderDoubleDamageHtml(); 
         allDoubleDamage.forEach(type => weaknessesHtml += renderOneWeaknessHtml(type)); 
         return weaknessesHtml;
+}
+
+async function getDamageData(pokeDataJson){
+    let allQuadrupleDamage = [], allDoubleDamage = [], allHalfDamage = [], allNoDamage = []
+    for (let i = 0; i < pokeDataJson.types.length; i++) {
+        let typeData = await fetch(pokeDataJson.types[i].type.url);
+        let typeDataJson = await typeData.json();
+        typeDataJson.damage_relations.double_damage_from.forEach(type => allDoubleDamage.push(type.name));
+        typeDataJson.damage_relations.half_damage_from.forEach(type => allHalfDamage.push(type.name));
+        typeDataJson.damage_relations.no_damage_from.forEach(type => allNoDamage.push(type.name));
+    }
+
+    return [allQuadrupleDamage, allDoubleDamage, allHalfDamage, allNoDamage]
+}
+
+function filterDoubleDamage(allDoubleDamage, allNoDamage, allHalfDamage){
+    allDoubleDamage = allDoubleDamage.filter((type) => allDoubleDamage.indexOf(type) === allDoubleDamage.lastIndexOf(type));
+    allDoubleDamage = allDoubleDamage.filter((type) => !allNoDamage.includes(type));
+    allDoubleDamage = allDoubleDamage.filter((type) => !allHalfDamage.includes(type));
+    return allDoubleDamage
 }
 
 function removeDashesAndCapitalizeFirstLetter(pokeName){
