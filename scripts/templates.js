@@ -125,9 +125,16 @@ function renderNextPokemonHtml(dataPokemonJson){
     `
 }
 
+function renderQuadrupleDamageHtml(){
+    return /*html*/`<p title="Quadruple Damage From" class="weakness-4x">4x</p>`
+}
+
+function renderDoubleDamageHtml(){
+    return /*html*/`<p title="Double Damage From" class="weakness-2x">2x</p>`
+}
+
 async function renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson, pokeEvolutionDataJson){
     return /*html*/`
-
             <img onclick="closeSelectedPokemon()" class="main-selected_pokecard_close" src="./assets/icons/fontawesome/xmark-solid.svg" alt="">
             <img class="main-selected_pokecard_img" src="${checkIfPokemonKoraidonOrMiraidon(pokeDataJson)[0] ? checkIfPokemonKoraidonOrMiraidon(pokeDataJson)[3] : pokeDataJson.sprites.other['official-artwork'].front_default}" alt="">
             
@@ -147,27 +154,23 @@ async function renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson, pok
                 <h4 class="m-tb">ABILITIES</h4>
                 <div class="flex-row-center flex-wrap">${renderPokeAbilities(pokeDataJson.abilities)}</div>
             </div>
-
             
             <div class="flex-row-center">
                 <div class="flex-column-center">
                     <h4 class="m-tb">HEIGHT</h4>
                     <p class="info-value">${pokeDataJson.height / 10}m</p>
                 </div>
-
                 <div class="flex-column-center">
                     <h4 class="m-tb">WEIGHT</h4>
                     <p class="info-value">${pokeDataJson.weight / 10}Kg</p>
                 </div>
-            </div>
-                
+            </div>   
 
             <div class="flex-row-center">
                 <div class="flex-column-center">
                     <h4 class="m-tb">WEAKNESSES</h4>
                     <div class="info-value flex-row-center flex-wrap-media">${await renderPokemonWeaknesses(pokeDataJson)}</div>
                 </div>
-            
                 <div class="flex-column-center">
                     <h4 class="m-tb">BASE EXP</h4>
                     <p class="info-value">${pokeDataJson.base_experience}</p>

@@ -110,8 +110,8 @@ h4 {
     padding-top: 50px;
     color: var(--text-gray);
     width: 250px;
-    height: min-content;
     display: flex;
+    justify-content: flex-end;
     flex-direction: column;
     align-items: center;
     position: relative;
@@ -640,20 +640,42 @@ main {
 .footer {
     display: flex;
     align-items: center;
-    padding: 12px 24px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 24px 24px;
     gap: 12px;
     color: var(--text-gray);
+    margin: 0;
 }
 
 .footer img {
     width: 30px;
+    height: 30px;
 }
 
+.footer-left, .footer-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-right a {
+    color: var(--text-blue);
+    text-decoration: none;
+}
+
+.footer-right a:hover {
+    text-decoration: underline;
+}
+
+/* Animations */
 .rotate_logo {
     width: 100px;
     height: 100px;
     animation: rotateLogo 3s linear infinite;
 }
+
+/* Keyframes */
 
 @keyframes rotateLogo {
     from {
@@ -663,6 +685,8 @@ main {
         transform: rotate(360deg);
     }
 }
+
+/* Media */
 
 @media (max-width: 780px) {
 

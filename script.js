@@ -1,6 +1,6 @@
 let maxNumberOfPokemonToShow = 1302;
 let startNumberOfPokemon = 1;
-let startAmountOfPokemon = 10;
+let startAmountOfPokemon = 32;
 
 let pokeCurrentAmount = startAmountOfPokemon;
 let pokeAmountForShowMore = 32;
@@ -18,7 +18,6 @@ function init(){
 
 async function renderPokecards(pokeStart, pokeEnd){
     let currentId = ++fetchRequestId;
-
     let refPokecards = document.getElementById('main-pokecards');
     let htmlStructureOfPokemons = "";
 
@@ -105,8 +104,9 @@ async function filterBasedOnInput(){
 
     if(currentId == fetchRequestId){
         return [matchedObjects, false]; 
+    }else{
+        return [[], true]
     }
-
 }
 
 async function renderBasedOnInput(matchedObjects, checkIfInputEmpty){
@@ -142,15 +142,15 @@ function eventListenerForInput(){
 
     refInputPokeName.addEventListener('input', (event) => {
         if(event.target.value.length >= 3 ){
-            searchByName();
-            refInputHint.classList.add('d_none');
+            searchByName();  
         }else if((event.target.value.length <= 2 && previousInputLength == 3)){
             renderFirstPartOfPokemon();
-            refInputHint.classList.remove('d_none');
         }
 
-        if(event.target.value.length == 0){
+        if(event.target.value.length == 0 || event.target.value.length >= 3){
             refInputHint.classList.add('d_none');
+        }else{
+            refInputHint.classList.remove('d_none');
         }
 
         if(event.target.value.length >= 3){
@@ -276,10 +276,10 @@ async function renderWeaknessForTwoType(pokeDataJson) {
         allDoubleDamage = allDoubleDamage.filter((type) => !allHalfDamage.includes(type));
 
         if(allQuadrupleDamage.length > 0){
-            weaknessesHtml = /*html*/`<p title="Quadruple Damage From" class="weakness-4x">4x</p>`
+            weaknessesHtml = renderQuadrupleDamageHtml();
             allQuadrupleDamage.forEach(type => weaknessesHtml += renderOneWeaknessHtml(type));
         }
-        weaknessesHtml += /*html*/`<p title="Double Damage From" class="weakness-2x">2x</p>`
+        weaknessesHtml += renderDoubleDamageHtml(); 
         allDoubleDamage.forEach(type => weaknessesHtml += renderOneWeaknessHtml(type)); 
         return weaknessesHtml;
 }
@@ -325,6 +325,23 @@ async function renderPokemonEvolutions(pokeEvolutionDataJson){
     let levelForThirdEvolution =  'Lvl ' + pokeEvolutionDataJson.chain.evolves_to[0]?.evolves_to[0]?.evolution_details[0]?.min_level;    
     let levelForSecondEvolution = 'Lvl ' + pokeEvolutionDataJson.chain.evolves_to[0]?.evolution_details[0]?.min_level;
 
+    let [dataFirstSpeciesJson, dataSecondSpeciesJson, dataThirdSpeciesJson] = await fetchDataForEvolutions(pokeEvolutionDataJson);
+
+    let dataFirstEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + dataFirstSpeciesJson.id);
+    let dataFirstEvolutionJson = await dataFirstEvolution.json();
+
+    let imgFirstEvolution = dataFirstEvolutionJson.sprites.other['official-artwork'].front_default;
+
+    if(dataThirdSpeciesJson){
+        return await getDataAndRenderThreeEvolutions(pokeEvolutionDataJson, imgFirstEvolution, dataFirstEvolutionJson, dataSecondSpeciesJson, dataThirdSpeciesJson, levelForSecondEvolution, levelForThirdEvolution);
+    }else if(dataSecondSpeciesJson){
+        return await getDataAndRenderTwoEvolutions(pokeEvolutionDataJson, imgFirstEvolution, levelForSecondEvolution, dataFirstEvolutionJson, dataSecondSpeciesJson);
+    }else{
+        return renderOneEvolution(imgFirstEvolution, dataFirstEvolutionJson.id)
+    }
+}
+
+async function fetchDataForEvolutions(pokeEvolutionDataJson){
     let dataFirstSpecies = await fetch(pokeEvolutionDataJson.chain.species.url);
     let dataFirstSpeciesJson = await dataFirstSpecies.json();
 
@@ -340,54 +357,37 @@ async function renderPokemonEvolutions(pokeEvolutionDataJson){
         dataThirdSpeciesJson = await dataThirdSpecies.json();
     }
 
-    let idOfFirstEvolution = dataFirstSpeciesJson?.id;
-    let idOfSecondEvolution = dataSecondSpeciesJson?.id;
-    let idOfThirdEvolution = dataThirdSpeciesJson?.id;
-    
-    console.log(levelForThirdEvolution, levelForSecondEvolution,
-               idOfFirstEvolution,idOfSecondEvolution,idOfThirdEvolution
+    return [dataFirstSpeciesJson, dataSecondSpeciesJson, dataThirdSpeciesJson]
+}
 
-    )
+async function getDataAndRenderTwoEvolutions(pokeEvolutionDataJson, imgFirstEvolution, levelForSecondEvolution, dataFirstEvolutionJson, dataSecondSpeciesJson) {
+    let dataSecondEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + dataSecondSpeciesJson.id);
+    let dataSecondEvolutionJson = await dataSecondEvolution.json();
+    let imgSecondEvolution = dataSecondEvolutionJson.sprites.other['official-artwork'].front_default;
 
-    let dataFirstEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + idOfFirstEvolution);
-    let dataFirstEvolutionJson = await dataFirstEvolution.json();
+    if(pokeEvolutionDataJson.chain.evolves_to[0]?.evolution_details[0]?.min_level == null){
+        levelForSecondEvolution = 'No Lvl';
+    }
+    return renderTwoEvolutions(imgFirstEvolution, imgSecondEvolution, levelForSecondEvolution, dataFirstEvolutionJson.id, dataSecondEvolutionJson.id)
+}
 
-    let imgFirstEvolution = dataFirstEvolutionJson.sprites.other['official-artwork'].front_default;
-    let imgSecondEvolution, imgThirdEvolution;
+async function getDataAndRenderThreeEvolutions(pokeEvolutionDataJson, imgFirstEvolution, dataFirstEvolutionJson, dataSecondSpeciesJson, dataThirdSpeciesJson, levelForSecondEvolution, levelForThirdEvolution){
+    let dataThirdEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + dataThirdSpeciesJson.id);
+    let dataThirdEvolutionJson = await dataThirdEvolution.json();
+    let imgThirdEvolution = dataThirdEvolutionJson.sprites.other['official-artwork'].front_default;
 
-    if(idOfThirdEvolution){
-        let dataThirdEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + idOfThirdEvolution);
-        let dataThirdEvolutionJson = await dataThirdEvolution.json();
-        imgThirdEvolution = dataThirdEvolutionJson.sprites.other['official-artwork'].front_default;
+    let dataSecondEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + dataSecondSpeciesJson.id);
+    let dataSecondEvolutionJson = await dataSecondEvolution.json();
+    let imgSecondEvolution = dataSecondEvolutionJson.sprites.other['official-artwork'].front_default;
 
-        let dataSecondEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + idOfSecondEvolution);
-        let dataSecondEvolutionJson = await dataSecondEvolution.json();
-        imgSecondEvolution = dataSecondEvolutionJson.sprites.other['official-artwork'].front_default;
-
-        if(pokeEvolutionDataJson.chain.evolves_to[0]?.evolves_to[0]?.evolution_details[0]?.min_level == null){
-            levelForThirdEvolution = 'No Lvl';
-        }
-
-        if(pokeEvolutionDataJson.chain.evolves_to[0]?.evolution_details[0]?.min_level == null){
-            levelForSecondEvolution = 'No Lvl';
-        }
-        
-        return renderThreeEvolutions(imgFirstEvolution, imgSecondEvolution, imgThirdEvolution, levelForSecondEvolution, levelForThirdEvolution, dataFirstEvolutionJson.id, dataSecondEvolutionJson.id, dataThirdEvolutionJson.id) 
+    if(pokeEvolutionDataJson.chain.evolves_to[0]?.evolves_to[0]?.evolution_details[0]?.min_level == null){
+        levelForThirdEvolution = 'No Lvl';
     }
 
-    if(idOfSecondEvolution){
-        let dataSecondEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + idOfSecondEvolution);
-        let dataSecondEvolutionJson = await dataSecondEvolution.json();
-        imgSecondEvolution = dataSecondEvolutionJson.sprites.other['official-artwork'].front_default;
-
-        if(pokeEvolutionDataJson.chain.evolves_to[0]?.evolution_details[0]?.min_level == null){
-            levelForSecondEvolution = 'No Lvl';
-        }
-
-        return renderTwoEvolutions(imgFirstEvolution, imgSecondEvolution, levelForSecondEvolution, dataFirstEvolutionJson.id, dataSecondEvolutionJson.id)
+    if(pokeEvolutionDataJson.chain.evolves_to[0]?.evolution_details[0]?.min_level == null){
+        levelForSecondEvolution = 'No Lvl';
     }
-
-    return renderOneEvolution(imgFirstEvolution, dataFirstEvolutionJson.id)
+    return renderThreeEvolutions(imgFirstEvolution, imgSecondEvolution, imgThirdEvolution, levelForSecondEvolution, levelForThirdEvolution, dataFirstEvolutionJson.id, dataSecondEvolutionJson.id, dataThirdEvolutionJson.id) 
 }
 
 function closeSelectedPokemon(){
@@ -411,6 +411,5 @@ function sliceString(string){
         return string.slice(0, 10) + ' ...'
     }else{
         return string
-    }
-    
+    }    
 }
