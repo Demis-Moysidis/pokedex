@@ -10,12 +10,22 @@ let fetchRequestId = 0;
 
 let selectedPokemonId = 0;
 
+/**
+ * Initializes the application by rendering the loading screen and the initial set of Pokémon cards.
+ * @returns {void}
+ */
 function init(){
     renderLoadingScreen();
     renderPokecards(startNumberOfPokemon, startAmountOfPokemon);
     eventListenerForInput();
 }
 
+/**
+ * Renders a set of Pokémon cards from a specified start to end index.
+ * @param {number} pokeStart - The starting index of Pokémon to render.
+ * @param {number} pokeEnd - The ending index of Pokémon to render.
+ * @returns {Promise<void>} A promise that resolves when the Pokémon cards are rendered.
+ */
 async function renderPokecards(pokeStart, pokeEnd){
     let currentId = ++fetchRequestId;
     let refPokecards = document.getElementById('main-pokecards');
@@ -40,6 +50,11 @@ async function renderPokecards(pokeStart, pokeEnd){
     }
 }
 
+/**
+ * Renders types for a single Pokémon.
+ * @param {Array} typeList - An array of types associated with the Pokémon.
+ * @returns {string} HTML string representing the type of the Pokémon.
+ */
 function renderPokeTypes(typeList){
     let typesHTML = ""
     for (let i = 0; i < typeList.length; i++) {
@@ -48,6 +63,11 @@ function renderPokeTypes(typeList){
     return typesHTML
 }
 
+/**
+ * Renders abilities for a list of Pokémon.
+ * @param {Array} abilitiesList - An array of abilities associated with the Pokémon.
+ * @returns {string} HTML string representing the abilities of the Pokémon.
+ */
 function renderPokeAbilities(abilitiesList){
     let abilitiesHTML = ""
     for (let i = 0; i < abilitiesList.length; i++) {
@@ -56,21 +76,37 @@ function renderPokeAbilities(abilitiesList){
     return abilitiesHTML
 }
 
+/**
+ * Renders a loading screen while fetching Pokémon data.
+ * @returns {void}
+ */
 function renderLoadingScreen(){
     let refPokecards = document.getElementById('main-pokecards');
     refPokecards.insertAdjacentHTML('beforeend', renderLoadingHTML());
 }
 
+/**
+ * Renders a loading screen for the selected Pokémon card.
+ * @returns {void}
+ */
 function renderLoadingScreenForSelectedPokemon(){
     let refSelectedPokemon = document.getElementById('main-selected_pokecard');
     refSelectedPokemon.innerHTML = renderLoadingHTMLForSelectedPokemon();
 }
 
+/**
+ * Renders a screen indicating that no results were found for the Pokémon search.
+ * @returns {void}
+ */
 function renderNoResultScreen(){
     let refPokecards = document.getElementById('main-pokecards');
     refPokecards.innerHTML = renderNoResultHTML();
 }
 
+/**
+ * Renders a "Show More Pokémon" button.
+ * @returns {void}
+ */
 function showMorePokemon(){
     let refPokecards = document.getElementById('main-pokecards');
     refPokecards.removeChild(refPokecards.lastElementChild);
@@ -80,11 +116,19 @@ function showMorePokemon(){
     pokeCurrentAmount += pokeAmountForShowMore;
 }
 
+/**
+ * Searches for Pokémon by name based on user input.
+ * @returns {Promise<void>} A promise that resolves when the search is complete and results are rendered.
+ */
 async function searchByName() {
     let [matchedObjects, checkIfInputEmpty] = await filterBasedOnInput();
     renderBasedOnInput(matchedObjects, checkIfInputEmpty);
 }
 
+/**
+ * Filters Pokémon based on user input from the search field.
+ * @returns {Promise<Array>} A promise that resolves to an array containing matched Pokémon objects.
+ */
 async function filterBasedOnInput(){
     refInputPokeName = document.getElementById('main-poke_search');
     inputValue = refInputPokeName.value;
@@ -109,6 +153,12 @@ async function filterBasedOnInput(){
     }
 }
 
+/**
+ * Renders the matched Pokémon objects based on user input.
+ * @param {Array} matchedObjects - An array of matched Pokémon objects.
+ * @param {boolean} checkIfInputEmpty - A flag indicating whether the input is empty.
+ * @returns {Promise<void>} A promise that resolves when the matched Pokémon objects are rendered.
+ */
 async function renderBasedOnInput(matchedObjects, checkIfInputEmpty){
     if(matchedObjects.length == 0 && !checkIfInputEmpty){
         renderNoResultScreen();
@@ -120,6 +170,11 @@ async function renderBasedOnInput(matchedObjects, checkIfInputEmpty){
     renderMatchedObjects(matchedObjects);
 }
 
+/**
+ * Renders the matched Pokémon objects as cards in the UI.
+ * @param {Array} matchedObjects - An array of matched Pokémon objects.
+ * @returns {Promise<void>} A promise that resolves when the matched Pokémon cards are rendered.
+ */
 async function renderMatchedObjects(matchedObjects){
     let refPokecards =  document.getElementById('main-pokecards');
     refPokecards.innerHTML = "";
@@ -140,6 +195,12 @@ async function renderMatchedObjects(matchedObjects){
     }
 }
 
+/**
+ * Sets up an event listener for the Pokémon name input field.
+ * It listens for input changes and triggers a search if the input length is 3 or more
+ * or resets the view if the input length is less than 3.
+ * @returns {void}
+ */
 function eventListenerForInput(){
     let refInputPokeName = document.getElementById('main-poke_search');
     let refInputHint = document.getElementById('main-input_hint');
@@ -165,6 +226,10 @@ function eventListenerForInput(){
     });
 }
 
+/**
+ * Renders the first part of the Pokémon cards, resetting the view to show the initial set of Pokémon.
+ * @returns {void} 
+ */
 function renderFirstPartOfPokemon(){
     let refPokecards = document.getElementById('main-pokecards');
     refPokecards.innerHTML = "";
@@ -173,8 +238,12 @@ function renderFirstPartOfPokemon(){
     pokeCurrentAmount = startAmountOfPokemon;
 }
 
+/**
+ * Renders the selected Pokémon card based on the provided Pokémon ID.
+ * @param {number} pokemonId - The ID of the Pokémon to be rendered.
+ * @returns {Promise<void>} A promise that resolves when the selected Pokémon card is rendered.
+ */
 async function renderSelectedPokemon(pokemonId){
-
     if(selectedPokemonId == pokemonId){
         return
     }else{
@@ -195,16 +264,31 @@ async function renderSelectedPokemon(pokemonId){
     refSelectedPokecard = document.getElementById('main-selected_pokecard').innerHTML = await renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson, pokeEvolutionDataJson);
 }
 
+/**
+ * Finds the generation name from a list of generation JSON objects.
+ * @param {Array} generationJsonList - An array of generation JSON objects.
+ * @return {string} The name of the generation in English.
+ */
 function findGenerationName(generationJsonList){
     let matchedGeneration = generationJsonList.find(generation => generation.language.name == 'en');
     return matchedGeneration.genus
 }
 
+/**
+ * Finds the flavor text in English from a list of flavor text JSON objects.
+ * @param {Array} flavorTextJsonList - An array of flavor text JSON objects.
+ * @return {string} The flavor text in English, with form feed characters replaced by spaces.
+ */
 function findFlavorText(flavorTextJsonList){
     let matchedFlavorText = flavorTextJsonList.find(flavorText => flavorText.language.name == 'en');
     return matchedFlavorText.flavor_text.replace(/\f/g, ' ')
 }
 
+/**
+ * Finds the GIF URL for a Pokémon based on its sprite data.
+ * @param {Object} pokeDataJson - JSON object containing Pokémon data.
+ * @return {string} The URL of the Pokémon GIF, or the default sprite if no GIF is available.
+ */
 function findPokemonGif(pokeDataJson){
     if(pokeDataJson.sprites.versions['generation-v']['black-white'].animated.front_default != null){
         return pokeDataJson.sprites.versions['generation-v']['black-white'].animated.front_default;
@@ -217,6 +301,11 @@ function findPokemonGif(pokeDataJson){
     }
 }
 
+/**
+ * Checks if the Pokémon is Koraidon or Miraidon and returns relevant data.
+ * @param {Object} pokeDataJson - JSON object containing Pokémon data.
+ * @return {Array|boolean} An array containing a boolean indicating if it's Koraidon or Miraidon, the name, and URLs for the sprite and official artwork, or false if not.
+ */
 function checkIfPokemonKoraidonOrMiraidon(pokeDataJson){
     if( pokeDataJson.name == "koraidon-limited-build" || 
         pokeDataJson.name == "koraidon-sprinting-build" ||
@@ -244,6 +333,11 @@ function checkIfPokemonKoraidonOrMiraidon(pokeDataJson){
     }
 }
 
+/**
+ * Renders the weaknesses of a Pokémon.
+ * @param {Object} pokeDataJson - JSON object containing Pokémon data.
+ * @return {Promise<string>} A promise that resolves to an HTML string representing the Pokémon's weaknesses.
+ */
 async function renderPokemonWeaknesses(pokeDataJson){
     if(pokeDataJson.types.length == 1){
         return await renderWeaknessForOneType(pokeDataJson);
@@ -252,6 +346,11 @@ async function renderPokemonWeaknesses(pokeDataJson){
     }
 }
 
+/**
+ * Renders the weaknesses for a single type Pokémon.
+ * @param {Object} pokeDataJson - JSON object containing Pokémon data.
+ * @return {Promise<string>} A promise that resolves to an HTML string representing the weaknesses of the Pokémon.
+ */
 async function renderWeaknessForOneType(pokeDataJson){
         let weaknessesHtml = "";
         let typeData = await fetch(pokeDataJson.types[0].type.url);
@@ -263,6 +362,11 @@ async function renderWeaknessForOneType(pokeDataJson){
         return weaknessesHtml;
 }
 
+/**
+ * Renders the weaknesses for a two-type Pokémon.
+ * @param {Object} pokeDataJson - JSON object containing Pokémon data.
+ * @return {Promise<string>} A promise that resolves to an HTML string representing the weaknesses of the Pokémon.
+ */
 async function renderWeaknessForTwoType(pokeDataJson) {
         let weaknessesHtml = ""; 
         let [allQuadrupleDamage, allDoubleDamage, allHalfDamage, allNoDamage] = await getDamageData(pokeDataJson);
@@ -279,6 +383,11 @@ async function renderWeaknessForTwoType(pokeDataJson) {
         return weaknessesHtml;
 }
 
+/**
+ * Fetches damage data for a Pokémon based on its types.
+ * @param {Object} pokeDataJson - JSON object containing Pokémon data.
+ * @returns {Promise<Array>} A promise that resolves to an array containing lists of types that cause quadruple, double, half, and no damage.
+ */
 async function getDamageData(pokeDataJson){
     let allQuadrupleDamage = [], allDoubleDamage = [], allHalfDamage = [], allNoDamage = []
     for (let i = 0; i < pokeDataJson.types.length; i++) {
@@ -292,6 +401,14 @@ async function getDamageData(pokeDataJson){
     return [allQuadrupleDamage, allDoubleDamage, allHalfDamage, allNoDamage]
 }
 
+/**
+ * Filters out duplicate types from the list of double damage types,
+ * ensuring that types that also cause no damage or half damage are excluded.
+ * @param {Array} allDoubleDamage - An array of types that cause double damage.
+ * @param {Array} allNoDamage - An array of types that cause no damage.
+ * @param {Array} allHalfDamage - An array of types that cause half damage.
+ * @returns {Array} An array of unique types that cause double damage, excluding those that also cause no damage or half damage.
+ */
 function filterDoubleDamage(allDoubleDamage, allNoDamage, allHalfDamage){
     allDoubleDamage = allDoubleDamage.filter((type) => allDoubleDamage.indexOf(type) === allDoubleDamage.lastIndexOf(type));
     allDoubleDamage = allDoubleDamage.filter((type) => !allNoDamage.includes(type));
@@ -299,6 +416,11 @@ function filterDoubleDamage(allDoubleDamage, allNoDamage, allHalfDamage){
     return allDoubleDamage
 }
 
+/**
+ * Removes dashes from a Pokémon name and capitalizes the first letter of each word.
+ * @param {string} pokeName - The name of the Pokémon, possibly containing dashes.
+ * @returns {string} The formatted Pokémon name with dashes removed and the first letter of each word capitalized.
+ */
 function removeDashesAndCapitalizeFirstLetter(pokeName){
     let indexOfDashes = [];
     for (let i = 0; i < pokeName.length; i++) {
@@ -314,6 +436,11 @@ function removeDashesAndCapitalizeFirstLetter(pokeName){
     return pokeName
 }
 
+/**
+ * Renders stats for a single Pokémon.
+ * @param {Object} stat - An object containing the base stat and its name.
+ * @returns {string} HTML string representing the stat of the Pokémon.  
+ */
 function renderPokemonStats(pokemonStatsList){
     statsHtml = "";
     statShortForms = {'hp': 'HP', 
@@ -332,10 +459,20 @@ function renderPokemonStats(pokemonStatsList){
     return statsHtml
 }
 
+/**
+ * Sums the base stat of a Pokémon.
+ * @param {Array} pokemonStatsList - An array of objects containing the base stats of the Pokémon.
+ * @returns {number} The total base stat of the Pokémon.
+ */
 function sumOfStats(pokemonStatsList){
     return pokemonStatsList.reduce((sum, stat) => sum + stat.base_stat, 0)
 }
 
+/**
+ * Renders the evolution details of a Pokémon based on its evolution chain data.
+ * @param {Object} pokeEvolutionDataJson - JSON object containing the evolution chain data of the Pokémon.
+ * @returns {Promise<string>} A promise that resolves to an HTML string representing the Pokémon's evolutions.
+ */
 async function renderPokemonEvolutions(pokeEvolutionDataJson){
     let levelForThirdEvolution =  'Lvl ' + pokeEvolutionDataJson.chain.evolves_to[0]?.evolves_to[0]?.evolution_details[0]?.min_level;    
     let levelForSecondEvolution = 'Lvl ' + pokeEvolutionDataJson.chain.evolves_to[0]?.evolution_details[0]?.min_level;
@@ -356,6 +493,11 @@ async function renderPokemonEvolutions(pokeEvolutionDataJson){
     }
 }
 
+/**
+ * Fetches data for the first, second, and third species in the evolution chain.
+ * @param {Object} pokeEvolutionDataJson - JSON object containing the evolution chain data of the Pokémon.
+ * @returns {Promise<Array>} A promise that resolves to an array containing the JSON data for the first, second, and third species in the evolution chain.
+ */
 async function fetchDataForEvolutions(pokeEvolutionDataJson){
     let dataFirstSpecies = await fetch(pokeEvolutionDataJson.chain.species.url);
     let dataFirstSpeciesJson = await dataFirstSpecies.json();
@@ -375,6 +517,15 @@ async function fetchDataForEvolutions(pokeEvolutionDataJson){
     return [dataFirstSpeciesJson, dataSecondSpeciesJson, dataThirdSpeciesJson]
 }
 
+/**
+ * Fetches and renders the evolution details for two evolutions of a Pokémon.
+ * @param {Object} pokeEvolutionDataJson - JSON object containing the evolution chain data of the Pokémon.
+ * @param {string} imgFirstEvolution - The image URL of the first evolution.
+ * @param {number} levelForSecondEvolution - The level required for the second evolution.
+ * @param {Object} dataFirstEvolutionJson - JSON object containing the data for the first evolution.
+ * @param {Object} dataSecondSpeciesJson - JSON object containing the data for the second species in the evolution chain.
+ * @returns {Promise<string>} A promise that resolves to an HTML string representing the two evolutions of the Pokémon.
+ */
 async function getDataAndRenderTwoEvolutions(pokeEvolutionDataJson, imgFirstEvolution, levelForSecondEvolution, dataFirstEvolutionJson, dataSecondSpeciesJson) {
     let dataSecondEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + dataSecondSpeciesJson.id);
     let dataSecondEvolutionJson = await dataSecondEvolution.json();
@@ -386,6 +537,17 @@ async function getDataAndRenderTwoEvolutions(pokeEvolutionDataJson, imgFirstEvol
     return renderTwoEvolutions(imgFirstEvolution, imgSecondEvolution, levelForSecondEvolution, dataFirstEvolutionJson.id, dataSecondEvolutionJson.id)
 }
 
+/**
+ * Fetches and renders the evolution details for three evolutions of a Pokémon.
+ * @param {Object} pokeEvolutionDataJson - JSON object containing the evolution chain data of the Pokémon.
+ * @param {string} imgFirstEvolution - The image URL of the first evolution.
+ * @param {Object} dataFirstEvolutionJson - JSON object containing the data for the first evolution.
+ * @param {Object} dataSecondSpeciesJson - JSON object containing the data for the second species in the evolution chain.
+ * @param {Object} dataThirdSpeciesJson - JSON object containing the data for the third species in the evolution chain.
+ * @param {number} levelForSecondEvolution - The level required for the second evolution.
+ * @param {number} levelForThirdEvolution - The level required for the third evolution.
+ * @returns {Promise<string>} A promise that resolves to an HTML string representing the three evolutions of the Pokémon.
+ */
 async function getDataAndRenderThreeEvolutions(pokeEvolutionDataJson, imgFirstEvolution, dataFirstEvolutionJson, dataSecondSpeciesJson, dataThirdSpeciesJson, levelForSecondEvolution, levelForThirdEvolution){
     let dataThirdEvolution = await fetch('https://pokeapi.co/api/v2/pokemon/' + dataThirdSpeciesJson.id);
     let dataThirdEvolutionJson = await dataThirdEvolution.json();
@@ -405,11 +567,21 @@ async function getDataAndRenderThreeEvolutions(pokeEvolutionDataJson, imgFirstEv
     return renderThreeEvolutions(imgFirstEvolution, imgSecondEvolution, imgThirdEvolution, levelForSecondEvolution, levelForThirdEvolution, dataFirstEvolutionJson.id, dataSecondEvolutionJson.id, dataThirdEvolutionJson.id) 
 }
 
+/**
+ * Closes the selected Pokémon card and resets the selected Pokémon ID.
+ * @returns {void}
+ */
 function closeSelectedPokemon(){
     document.getElementById('main-selected_pokemon').classList.add('d_none-selected_pokemon');
     selectedPokemonId = 0;
 }
 
+/** 
+ * Renders the previous or next Pokémon based on the provided ID and direction.
+ * @param {number} id - The ID of the Pokémon to render.
+ * @param {string} direction - The direction to navigate ('previous' or 'next').
+ * @returns {Promise<string>} A promise that resolves to an HTML string representing the previous or next Pokémon.
+ */
 async function renderPreviousOrNextPokemon(id, direction){
     let dataPokemon = await fetch('https://pokeapi.co/api/v2/pokemon/' + id);
     let dataPokemonJson = await dataPokemon.json();
@@ -421,6 +593,11 @@ async function renderPreviousOrNextPokemon(id, direction){
     }
 }
 
+/**
+ * Slices a string to a maximum length of 10 characters and appends ' ...' if it exceeds that length.
+ * @param {string} string - The string to be sliced.
+ * @returns {string} The sliced string with ' ...' appended if it exceeds 10 characters, or the original string if it does not.
+ */
 function sliceString(string){
     if(string.length > 10){
         return string.slice(0, 10) + ' ...'

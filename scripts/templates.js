@@ -1,3 +1,10 @@
+/**
+ * Generates HTML for displaying one type for a single Pokémon.
+ *
+ * @param {Array} typeList - An array of type objects for a Pokémon.
+ * @param {number} i - The index of the type in the typeList to render.
+ * @returns {string} HTML string representing the Pokémon type, including its icon and name.
+ */
 function renderTypesForOnePokemon(typeList, i){
     return /*html*/`
         <p class="${typeList[i].type.name} type">
@@ -7,6 +14,12 @@ function renderTypesForOnePokemon(typeList, i){
         `
 }
 
+/**
+ * Generates HTML for displaying one ability for a single Pokémon.
+ * @param {Array} abilitiesList - An array of ability objects for a Pokémon.
+ * @param {number} i - The index of the ability in the abilitiesList to render.
+ * @returns {string} HTML string representing the Pokémon ability, including its name and an icon if it's a hidden ability.
+ */
 function renderAbilitiesForOnePokemon(abilitiesList, i){
     return /*html*/`
         <p class="ability ${abilitiesList[i].is_hidden ? 'ability-hidden' : 'ability-not-hidden'}">
@@ -16,12 +29,22 @@ function renderAbilitiesForOnePokemon(abilitiesList, i){
         `
 }
 
+/**
+ * Generates HTML for displaying one weakness for a single Pokémon.
+ * @param {string} type - The type of the Pokémon weakness to render.
+ * @returns {string} HTML string representing the Pokémon weakness, including its icon.
+ */
 function renderOneWeaknessHtml(type){
     return /*html*/`
             <img class="weakness" title="${type.toUpperCase()}" src="./assets/icons/types-2/${type}.svg" alt="">
         `
 }
 
+/**
+ * Generates HTML for displaying one Pokémon stat.
+ * @param {Object} stat - An object representing a Pokémon stat, containing its name and base value.
+ * @returns {string} HTML string representing the Pokémon stat, including its name and base value.
+ */
 function renderOneStat(stat){
     return /*html*/`
             <div class="flex-column-center flex-1 stat" title="${removeDashesAndCapitalizeFirstLetter(stat.stat.name)}">
@@ -31,6 +54,11 @@ function renderOneStat(stat){
         `
 }
 
+/**
+ * Generates HTML for displaying a Pokémon's total stat.
+ * @param {Array} pokemonStatsList - An array of Pokémon stat objects.
+ * @returns {string} HTML string representing the Pokémon's stats, including a total stat.
+ */
 function renderTotalStat(pokemonStatsList){
     return /*html*/`
             <div class="flex-column-center flex-1 stat stat-TOT-bg" title="Total">
@@ -40,6 +68,19 @@ function renderTotalStat(pokemonStatsList){
         `
 }
 
+/**
+ * Generates HTML for displaying a three-stage Pokémon evolution chain.
+ *
+ * @param {string} imgFirstEvolution - Image URL for the first evolution stage.
+ * @param {string} imgSecondEvolution - Image URL for the second evolution stage.
+ * @param {string} imgThirdEvolution - Image URL for the third evolution stage.
+ * @param {number} levelForSecondEvolution - Level or condition for evolving to the second stage.
+ * @param {number} levelForThirdEvolution - Level or condition for evolving to the third stage.
+ * @param {number} pokeIdFirstEvolution - Pokémon ID for the first evolution stage.
+ * @param {number} pokeIdSecondEvolution - Pokémon ID for the second evolution stage.
+ * @param {number} pokeIdThirdEvolution - Pokémon ID for the third evolution stage.
+ * @returns {string} HTML string representing the three-stage evolution chain, including images and evolution info.
+ */
 function renderThreeEvolutions(imgFirstEvolution, imgSecondEvolution, imgThirdEvolution, levelForSecondEvolution, levelForThirdEvolution, pokeIdFirstEvolution, pokeIdSecondEvolution, pokeIdThirdEvolution){
     return /*html*/`
         <img onclick="renderSelectedPokemon(${pokeIdFirstEvolution})" src="${imgFirstEvolution}" alt="">
@@ -50,6 +91,15 @@ function renderThreeEvolutions(imgFirstEvolution, imgSecondEvolution, imgThirdEv
     `
 }
 
+/**
+ * Generates HTML for displaying a two-stage Pokémon evolution chain.
+ * @param {string} imgFirstEvolution - Image URL for the first evolution stage.
+ * @param {string} imgSecondEvolution - Image URL for the second evolution stage.
+ * @param {string} levelForSecondEvolution - Level or condition for evolving to the second stage.
+ * @param {number} pokeIdFirstEvolution - Pokémon ID for the first evolution stage.
+ * @param {number} pokeIdSecondEvolution - Pokémon ID for the second evolution stage.
+ * @return {string} HTML string representing the two-stage evolution chain, including images and evolution info.
+ */
 function renderTwoEvolutions(imgFirstEvolution, imgSecondEvolution, levelForSecondEvolution, pokeIdFirstEvolution, pokeIdSecondEvolution){
     return /*html*/`
         <img onclick="renderSelectedPokemon(${pokeIdFirstEvolution})" src="${imgFirstEvolution}" alt="">
@@ -58,12 +108,23 @@ function renderTwoEvolutions(imgFirstEvolution, imgSecondEvolution, levelForSeco
     `
 }
 
+/**
+ * Generates HTML for displaying a single Pokémon evolution.
+ * @param {string} imgFirstEvolution - Image URL for the first evolution stage.
+ * @param {number} pokeIdFirstEvolution - Pokémon ID for the first evolution stage.
+ * @returns {string} HTML string representing the single evolution, including an image.
+ */
 function renderOneEvolution(imgFirstEvolution, pokeIdFirstEvolution){
     return /*html*/`
         <img onclick="renderSelectedPokemon(${pokeIdFirstEvolution})" src="${imgFirstEvolution}" alt="">
     `
 }
 
+/**
+ * Generates HTML for displaying a Pokémon card.
+ * @param {Object} pokeDataJson - JSON object containing Pokémon data.
+ * @returns {string} HTML string representing the Pokémon card, including an image, ID, name, and types.
+ */
 function renderOnePokemonCard(pokeDataJson){
     return /*html*/`
         <div onclick="renderSelectedPokemon(${pokeDataJson.id})" class="card poke_card">
@@ -75,6 +136,10 @@ function renderOnePokemonCard(pokeDataJson){
         `
 }
 
+/**
+ * Generates HTML for displaying a loading spinner.
+ * @returns {string} HTML string representing the loading spinner.
+ */
 function renderLoadingHTML(){
     return /*html*/`
         <div class="main-loading">
@@ -84,6 +149,10 @@ function renderLoadingHTML(){
         `
 }
 
+/**
+ * Generates HTML for displaying a loading spinner for the selected Pokémon.
+ * @returns {string} HTML string representing the loading spinner for the selected Pokémon.
+ */
 function renderLoadingHTMLForSelectedPokemon(){
     return /*html*/`
         <div class="selected_pokemon-loading">
@@ -93,6 +162,10 @@ function renderLoadingHTMLForSelectedPokemon(){
         `
 }
 
+/**
+ * Generates HTML for displaying a message when no search results are found.
+ * @returns {string} HTML string representing the "no results" message.
+ */
 function renderNoResultHTML(){
     return /*html*/`
         <div class="">
@@ -101,6 +174,10 @@ function renderNoResultHTML(){
         `
 }
 
+/**
+ * Generates HTML for displaying a "Show More Pokémon" button.
+ * @returns {string} HTML string representing the "Show More Pokémon" button.
+ */
 function renderShowMorePokemonBtn(){
     return /*html*/`
         <div class="main-more_pokemon_container">
@@ -109,6 +186,11 @@ function renderShowMorePokemonBtn(){
         `
 }
 
+/**
+ * Generates HTML for displaying the previous Pokémon in the selected Pokémon card.
+ * @param {Object} dataPokemonJson - JSON object containing Pokémon data for the previous Pokémon.
+ * @returns {string} HTML string representing the previous Pokémon in the selected Pokémon card.
+ */
 function renderPreviousPokemonHtml(dataPokemonJson){
     return /*html*/`
         <img class="main-selected_pokemon-img" src="${findPokemonGif(dataPokemonJson)}" alt="">
@@ -117,6 +199,11 @@ function renderPreviousPokemonHtml(dataPokemonJson){
     `
 }
 
+/**
+ * Generates HTML for displaying the next Pokémon in the selected Pokémon card.
+ * @param {Object} dataPokemonJson - JSON object containing Pokémon data for the next Pokémon
+ * @return {string} HTML string representing the next Pokémon in the selected Pokémon card.
+ */
 function renderNextPokemonHtml(dataPokemonJson){
     return /*html*/`
         <p>#${dataPokemonJson.id}</p>
@@ -125,14 +212,29 @@ function renderNextPokemonHtml(dataPokemonJson){
     `
 }
 
+/**
+ * Generates HTML for displaying quadruple damage from a specific type.
+ * @returns {string} HTML string representing quadruple damage from a type.
+ */
 function renderQuadrupleDamageHtml(){
     return /*html*/`<p title="Quadruple Damage From" class="weakness-4x">4x</p>`
 }
 
+/**
+ * Generates HTML for displaying double damage from a specific type.
+ * @return {string} HTML string representing double damage from a type.
+ */
 function renderDoubleDamageHtml(){
     return /*html*/`<p title="Double Damage From" class="weakness-2x">2x</p>`
 }
 
+/**
+ * Generates HTML for displaying selected Pokémon card details.
+ * @param {Object} pokeDataJson - JSON object containing Pokémon data.
+ * @param {Object} pokeSpeciesDataJson - JSON object containing Pokémon species data.
+ * @param {Object} pokeEvolutionDataJson - JSON object containing Pokémon evolution data.
+ * @returns {string} HTML string representing the selected Pokémon card, including its image, abilities, stats, and evolution details.
+ */
 async function renderSelectedPokeCardHtml(pokeDataJson, pokeSpeciesDataJson, pokeEvolutionDataJson){
     return /*html*/`
             <img onclick="closeSelectedPokemon()" class="main-selected_pokecard_close" src="./assets/icons/fontawesome/xmark-solid.svg" alt="">
